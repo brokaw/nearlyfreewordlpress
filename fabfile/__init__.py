@@ -1,6 +1,6 @@
 import ConfigParser
 
-from fabric.api import run, task, env, local
+from fabric.api import run, get, task, env, local
 from fabric.contrib.project import upload_project, rsync_project
 from fabric.contrib.files import upload_template, sed
 
@@ -34,13 +34,18 @@ env.WP_EXTRA_PHP = parser.get('SITE', 'WP_EXTRA_PHP')
 env.use_ssh_config = True
 
 
+
 @task
-def backup():
+def backup(tar=False):
     date = run('date "+%Y%m%dT%H%M%S"')
-    run('mkdir -p "$HOME/backup/{}"'.format(date))
-    run('wp db export $HOME/backup/{date}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(date=date, db=env.DB_NAME))
-    run('wp export --dir=$HOME/backup/{date}'.format(date=date))
-    run('tar -czf $HOME/backup/{date}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz wp-content/uploads'.format(db=env.DB_NAME, date=date))
+    remote_dir = "/home/private/backups/{}".format(date)
+    run('mkdir -p {}'.format(remote_dir))
+    run('wp db export {dir}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(dir=remote_dir, db=env.DB_NAME))
+    run('wp export --dir={}'.format(remote_dir))
+    if tar is True:
+        run('tar -czf {dir}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz wp-content/uploads'.format(
+            dir=remote_dir, db=env.DB_NAME, date=date))
+    get(remote_path="{}".format(remote_dir), local_path='backups')
 
 @task
 def status():
