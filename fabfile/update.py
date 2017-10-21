@@ -1,5 +1,6 @@
 import os
 from fabric.api import run, task, env, local
+from fabric.contrib.project import rsync_project
 
 
 
