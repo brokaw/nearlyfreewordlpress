@@ -1,12 +1,8 @@
 import os
 from fabric.api import run, task, env, local
 from fabric.contrib.project import rsync_project
+from .utilities import theme_dir_path
 
-
-
-def theme_dir_path():
-    grandparent_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    return os.path.join(grandparent_dir, 'themes')
 
 @task(default=True, name='site')
 def update_site():
