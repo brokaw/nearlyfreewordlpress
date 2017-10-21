@@ -80,11 +80,13 @@ def create_db():
     db_context = {'user': env.DB_USER,'host': env.MYSQL_HOST, 'password': env.DB_PASSWORD}
     upload_template(template, '/home/private/.my.cnf')
 
-    run('mysqladmin --defaults-file=$HOME/.my-admin.cnf create {dbname}'.format(dbname=env.DB_NAME))
-    run("mysql --defaults-file=$HOME/.my-admin.cnf -e 'CREATE USER \"{user}\"@\"%\" IDENTIFIED BY "
-        "\"{password}\"'".format(user=env.DB_USER, password=env.DB_PASSWORD));
+    run('mysqladmin --defaults-file={home}/.my-admin.cnf create {dbname}'.format(dbname=env.DB_NAME,
+        home=env.HOME))
+    run("mysql --defaults-file={home}/.my-admin.cnf -e 'CREATE USER \"{user}\"@\"%\" IDENTIFIED BY "
+        "\"{password}\"'".format(home=env.HOME, user=env.DB_USER, password=env.DB_PASSWORD));
     grant = "SELECT,INSERT,UPDATE,DELETE,CREATE,ALTER,INDEX,DROP,CREATE TEMPORARY TABLES,"\
             "SHOW VIEW,CREATE ROUTINE,ALTER ROUTINE,EXECUTE,CREATE VIEW,EVENT,TRIGGER,"\
             "LOCK TABLES,REFERENCES"
-    run("mysql --defaults-file=$HOME/.my-admin.cnf -e 'GRANT {grant} ON "
-        "{dbname} . * TO \"{user}\"@\"%\"'".format(dbname=env.DB_NAME, user=env.DB_USER, grant=grant))
+    run("mysql --defaults-file={home}/.my-admin.cnf -e 'GRANT {grant} ON "
+        "{dbname} . * TO \"{user}\"@\"%\"'".format(home=env.HOME, dbname=env.DB_NAME, user=env.DB_USER,
+        grant=grant))

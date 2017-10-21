@@ -20,6 +20,8 @@ def destroy_db():
     """
     Drops the WordPress database and removed the database user.
     """
-    run('mysqladmin --defaults-file=/home/private/.my-admin.cnf --force drop {dbname}'.format(dbname=env.DB_NAME))
-    run("mysql --defaults-file=$HOME/.my-admin.cnf -e 'DROP USER \"{user}\"@\"%\"'".format(user=env.DB_USER))
+    run('mysqladmin --defaults-file={home}/.my-admin.cnf --force drop {dbname}'.format(
+       home=env.HOME, dbname=env.DB_NAME))
+    run("mysql --defaults-file={home}/.my-admin.cnf -e 'DROP USER \"{user}\"@\"%\"'".format(
+        home=env.HOME, user=env.DB_USER))
 

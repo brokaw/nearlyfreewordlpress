@@ -17,6 +17,7 @@ env.MYSQL_ADMIN = parser.get('HOST', 'MYSQL_ADMIN')
 env.MYSQL_HOST = parser.get('HOST', 'MYSQL_HOST')
 env.MYSQL_PASSWORD = parser.get('HOST', 'MYSQL_PASSWORD')
 
+env.HOME = parser.get('SITE', 'HOME')
 env.DB_NAME = parser.get('SITE', 'DB_NAME')
 env.DB_USER = parser.get('SITE', 'DB_USER')
 env.DB_PASSWORD = parser.get('SITE', 'DB_PASSWORD')
