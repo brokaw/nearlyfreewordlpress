@@ -1,5 +1,4 @@
-import os
-from fabric.api import run, task, env, local
+from fabric.api import run, task
 from fabric.contrib.project import rsync_project
 from .utilities import theme_dir_path
 
@@ -12,6 +11,7 @@ def update_site():
     update_wp()
     update_plugins()
 
+
 @task(name='wp')
 def update_wp():
     """
@@ -20,12 +20,14 @@ def update_wp():
     run('wp core update')
     run('wp core update-db')
 
+
 @task(name='plugins')
 def update_plugins():
     """
     Update all WordPress plugins.
     """
     run('wp plugin update --all')
+
 
 @task(name='content')
 def update_theme():
@@ -34,6 +36,7 @@ def update_theme():
     """
     sync_dir = theme_dir_path() + '/'
     rsync_project(local_dir=sync_dir, remote_dir='/home/public/wp-content/themes/')
+
 
 def update_uploads():
     rsync_project(local_dir='uploads/', remote_dir='/home/public/wp-content/uploads/')
