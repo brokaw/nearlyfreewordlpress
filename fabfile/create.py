@@ -4,15 +4,17 @@ from fabric.api import run, task, cd, env
 from fabric.contrib.project import upload_project, rsync_project
 from fabric.contrib.files import upload_template
 
+from .utilities import theme_dir_path, template_dir_path
 
-def template_path(filename=''):
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(current_dir, 'templates', filename)
+@task
+def test():
+    path = theme_dir_path()
+    upload_project(path, '/home/public/wp-content')
 
 
 def install_wp():
     run('mkdir -p /home/private/.wp-cli')
-    path = template_path('wp-cli.yml.tmpl')
+    path = template_dir_path('wp-cli.yml.tmpl')
     upload_template(path, '/home/private/.wp-cli/config.yml', {'path': env.WP_DOCUMENT_ROOT})
     run('wp core download --locale=en_US')
     run('wp core config --dbhost={dbhost} --dbname={dbname} '
@@ -48,8 +50,11 @@ def fix_upload_permissions():
     run('chmod -R 775 wp-content/uploads')
 
 def upload_themes():
-    upload_project('themes', '/home/public/wp-content/themes')
-    upload_project('themes', '/home/public/wp-content/themes')
+    path = theme_dir_path()
+    upload_project(path, '/home/public/wp-content')
+
+def activate_theme():
+    run('wp theme activate {theme}'.format(theme=env.WP_THEME_NAME))
 
 @task(default=True, name='site')
 def create_site():
@@ -68,13 +73,14 @@ def create_wp():
     fix_upload_permissions()
     install_plugins()
     upload_themes()
+    activate_theme()
 
 @task(name='db')
 def create_db():
     """
     Create a new database
     """
-    template = template_path('my.cnf.tmpl')
+    template = template_dir_path('my.cnf.tmpl')
     db_context = {'user': env.MYSQL_ADMIN,'host': env.MYSQL_HOST, 'password': env.MYSQL_PASSWORD}
     upload_template(template, '/home/private/.my-admin.cnf', context=db_context)
     db_context = {'user': env.DB_USER,'host': env.MYSQL_HOST, 'password': env.DB_PASSWORD}
