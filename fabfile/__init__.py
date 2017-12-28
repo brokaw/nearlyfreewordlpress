@@ -2,9 +2,9 @@ import ConfigParser
 
 from fabric.api import run, get, task, env
 
-import fabfile.create
-import fabfile.destroy
-import fabfile.update
+import create
+import destroy
+import update
 
 parser = ConfigParser.SafeConfigParser()
 parser.read('hosting.cfg')
@@ -33,23 +33,23 @@ env.WP_EXTRA_PHP = parser.get('SITE', 'WP_EXTRA_PHP')
 env.use_ssh_config = True
 
 
-@task
-def backup(tar=False):
-    """
-    Create backup of database and optionaly upload folder.
-    """
-    date = run('date "+%Y%m%dT%H%M%S"')
-    remote_dir = "/home/private/backups/{}".format(date)
-    run('mkdir -p {}'.format(remote_dir))
-    run('wp db export {dir}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(dir=remote_dir,
-                                                                      db=env.DB_NAME))
-    run('wp export --dir={}'.format(remote_dir))
-    if tar is True:
-        run('tar -czf {dir}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz '
-            'wp-content/uploads'.format(dir=remote_dir, db=env.DB_NAME))
-    get(remote_path="{}".format(remote_dir), local_path='backups')
-
-
+# @task
+# def backup(tar=False):
+#     """
+#     Create backup of database and optionaly upload folder.
+#     """
+#     date = run('date "+%Y%m%dT%H%M%S"')
+#     remote_dir = "/home/private/backups/{}".format(date)
+#     run('mkdir -p {}'.format(remote_dir))
+#     run('wp db export {dir}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(dir=remote_dir,
+#                                                                       db=env.DB_NAME))
+#     run('wp export --dir={}'.format(remote_dir))
+#     if tar is True:
+#         run('tar -czf {dir}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz '
+#             'wp-content/uploads'.format(dir=remote_dir, db=env.DB_NAME))
+#     get(remote_path="{}".format(remote_dir), local_path='backups')
+#
+#
 @task
 def status():
     """
