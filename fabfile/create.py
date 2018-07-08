@@ -31,6 +31,9 @@ def install_plugins():
     if 'hyper-cache' in env.WP_PLUGINS:
         hypercache()
 
+def htaccess():
+    if os.path.isfile('htaccess'):
+        put(local_path='htaccess', remote_path="{}/.htaccess".format(env.WP_DOCUMENT_ROOT))
 
 def hypercache():
     run('chmod 775 wp-content')

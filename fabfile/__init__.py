@@ -35,18 +35,18 @@ env.use_ssh_config = True
 
 
 
-@task
-def backup(tar=False):
-    date = run('date "+%Y%m%dT%H%M%S"')
-    remote_dir = "/home/private/backups/{}".format(date)
-    run('mkdir -p {}'.format(remote_dir))
-    run('wp db export {dir}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(dir=remote_dir, db=env.DB_NAME))
-    run('wp export --dir={}'.format(remote_dir))
-    if tar is True:
-        run('tar -czf {dir}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz wp-content/uploads'.format(
-            dir=remote_dir, db=env.DB_NAME, date=date))
-    get(remote_path="{}".format(remote_dir), local_path='backups')
-
+# @task
+# def backup(tar=False):
+#     date = run('date "+%Y%m%dT%H%M%S"')
+#     remote_dir = "/home/private/backups/{}".format(date)
+#     run('mkdir -p {}'.format(remote_dir))
+#     run('wp db export {dir}/{db}_$(date "+%Y%m%dT%H%M%S").sql'.format(dir=remote_dir, db=env.DB_NAME))
+#     run('wp export --dir={}'.format(remote_dir))
+#     if tar is True:
+#         run('tar -czf {dir}/{db}_wp-uploads_$(date "+%Y%m%dT%H%M%S").tar.gz wp-content/uploads'.format(
+#             dir=remote_dir, db=env.DB_NAME, date=date))
+#     get(remote_path="{}".format(remote_dir), local_path='backups')
+#
 @task
 def status():
     run('wp cli info')

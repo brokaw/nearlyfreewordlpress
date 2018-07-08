@@ -1,6 +1,6 @@
 import os
-from fabric.api import run, task, env, local
-
+from fabric.api import run, put, task, env
+from fabric.contrib.project import rsync_project
 
 
 def theme_dir_path():
@@ -24,14 +24,17 @@ def update_wp():
     run('wp core update-db')
 
 @task(name='plugins')
-def update_plugins():
+def update_plugins(name=None):
     """
     Update all WordPress plugins.
     """
-    run('wp plugin update --all')
+    if name:
+        run('wp plugin update {}'.format(name))
+    else:
+        run('wp plugin update --all')
 
-@task(name='content')
-def update_theme():
+@task(name='themes')
+def update_themes():
     """
     Syncs the content in the themes folder.
     """
@@ -40,3 +43,11 @@ def update_theme():
 
 def update_uploads():
     rsync_project(local_dir='uploads/', remote_dir='/home/public/wp-content/uploads/')
+
+@task(name='htaccess')
+def update_htaccess():
+    '''
+    Puts the htaccess in the document root, overriding any existing file
+    '''
+    if os.path.isfile('htaccess'):
+        put(local_path='htaccess', remote_path="{}/.htaccess".format(env.WP_DOCUMENT_ROOT))
