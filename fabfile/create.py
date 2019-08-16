@@ -1,3 +1,5 @@
+import os
+
 from fabric.api import run, task, env
 from fabric.contrib.project import upload_project
 from fabric.contrib.files import upload_template
@@ -47,7 +49,8 @@ def fix_upload_permissions():
 
 def upload_themes():
     path = theme_dir_path()
-    upload_project(path, '/home/public/wp-content')
+    if os.path.exists(path):
+        upload_project(path, '/home/public/wp-content')
 
 
 def activate_theme():
